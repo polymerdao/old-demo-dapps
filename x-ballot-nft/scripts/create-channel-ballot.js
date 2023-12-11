@@ -22,12 +22,6 @@ async function main() {
         ibcBallotAddress
     );
 
-//   const fee = {
-//     recvFee: 0,
-//     ackFee: 0,
-//     timeoutFee: 0,
-//   };
-
   const tx = await ibcBallot.createChannel(
     false,
     ['connection-2', 'connection-1'],
