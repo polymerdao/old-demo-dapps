@@ -7,21 +7,15 @@
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const dispatcherAddr = '0x7a1d713f80BFE692D7b4Baa4081204C49735441E';
 
-  const lockedAmount = hre.ethers.parseEther("0.001");
+  const proposalNames = ['0x506f6c796d6572206272696e67732049424320746f20457468657265756d0000', '0x506f6c796d6572206272696e67732049424320746f20616c6c206f6620746800'];
+  const ibcBallot = await hre.ethers.deployContract("IbcBallot", [proposalNames, dispatcherAddr]);
 
-  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  await lock.waitForDeployment();
+  await ibcBallot.waitForDeployment();
 
   console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
+    `IbcBallot deployed to ${ibcBallot.target}`
   );
 }
 
