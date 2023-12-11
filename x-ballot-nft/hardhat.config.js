@@ -12,9 +12,9 @@ module.exports = {
     'base-sepolia': {
       url: 'https://sepolia.base.org',
       accounts: [
-        process.env.WALLET_KEY_1,
-        process.env.WALLET_KEY_2,
-        process.env.WALLET_KEY_3
+        process.env.BASE_WALLET_KEY_1,
+        process.env.BASE_WALLET_KEY_2,
+        process.env.BASE_WALLET_KEY_3,
       ],
       //gasPrice: 1000000000,
     },
@@ -22,9 +22,9 @@ module.exports = {
     'op-sepolia': {
       url: 'https://sepolia.optimism.io',
       accounts: [
-        process.env.WALLET_KEY_1, 
-        process.env.WALLET_KEY_2, 
-        process.env.WALLET_KEY_3
+        process.env.OP_WALLET_KEY_1, 
+        process.env.OP_WALLET_KEY_2, 
+        process.env.OP_WALLET_KEY_3,
       ],
       //gasPrice: 1000000000,
     },    

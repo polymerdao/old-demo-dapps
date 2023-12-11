@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/Ibc.sol';
 import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcReceiver.sol';
-import './IbcDispatcher.sol';
+import './IbcDispatcherNew.sol';
 
 error invalidCounterPartyPortId();
 

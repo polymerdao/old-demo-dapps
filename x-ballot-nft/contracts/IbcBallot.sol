@@ -191,9 +191,9 @@ contract IbcBallot is IbcReceiver, Ownable {
         vibcDispatcher.sendPacket{value: Ibc.calcEscrowFee(fee)}(channelId, payload, timeoutTimestamp, fee);
     }
 
-    function resetConnectedChannels() external {
+    function popConnectedChannels() external {
         require(msg.sender == chairperson, "You are not the chairperson");
-        connectedChannels = [];
+        connectedChannels.pop();
     }
 
     /**
