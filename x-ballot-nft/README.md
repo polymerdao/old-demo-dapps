@@ -34,3 +34,20 @@ You can find the deployed contract addresses here:
 | IbcProofOfVoteNFT | X | 0xA15c99eb3f52694bFfD57932dCa240552FCDCFfA |
 
 **When using the default values, there's nothing you should do**, when using custom values update accordingly in the `create-channel-ballot.js` adn `vote-and-send.js` scripts.
+
+### Create an IBC channel
+
+You can test the channel handshake (triggered from the IbcBallot contract) by running:
+```bash
+npx hardhat run scripts/create-channel-ballot.js --network op-sepolia
+```
+Check the dispatcher contracts on either side to verify the successful completion of the handshake (alternatively query Polymer or the `connectedChannels` storage variable in the dApps).
+
+### Send a packet
+
+When the channel has been created, you can move to testing packet sends. Run:
+```bash
+npx hardhat run scripts/vote-and-send.js --network op-sepolia
+```
+
+Again check the dispatcher for evidence of succesful completion of the packet lifecycle or query Polymer or the dApp contracts to find out.
