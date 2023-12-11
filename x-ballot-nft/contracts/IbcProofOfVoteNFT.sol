@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/Ibc.sol';
 import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcReceiver.sol';
-import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcDispatcher.sol';
+import './IbcDispatcher.sol';
 
 error invalidCounterPartyPortId();
 
@@ -31,10 +31,10 @@ contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
     string tokenURIPolyVote;
 
     // vIBC core Dispatcher address on Base Sepolia
-    IbcDispatcher public vibcDispatcher;
+    IbcDispatcherNew public vibcDispatcher;
 
     constructor(address _vibcDispatcherAddress, string memory _tokenURIPolyVote) ERC721("PolyVoter", "POLYV") {
-        vibcDispatcher = IbcDispatcher(_vibcDispatcherAddress);
+        vibcDispatcher = IbcDispatcherNew(_vibcDispatcherAddress);
         supportedVersions = ['1.0', '2.0'];
         tokenURIPolyVote = _tokenURIPolyVote;
     }

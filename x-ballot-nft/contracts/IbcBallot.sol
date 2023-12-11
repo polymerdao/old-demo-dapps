@@ -5,7 +5,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/Ibc.sol';
 import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcReceiver.sol';
-import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcDispatcher.sol';
+import './IbcDispatcherNew.sol';
 
 error invalidCounterPartyPortId();
 
@@ -53,7 +53,7 @@ contract IbcBallot is IbcReceiver, Ownable {
     string[] public supportedVersions;
 
     // vIBC core Dispatcher address on OP sepolia
-    IbcDispatcher public vibcDispatcher; //'0x7a1d713f80BFE692D7b4Baa4081204C49735441E'
+    IbcDispatcherNew public vibcDispatcher; //'0x7a1d713f80BFE692D7b4Baa4081204C49735441E'
 
     /** 
      * @dev Create a new ballot to choose one of 'proposalNames'.
@@ -61,7 +61,7 @@ contract IbcBallot is IbcReceiver, Ownable {
      */
     constructor(bytes32[] memory proposalNames, address _vibcDispatcherAddress) {
         chairperson = msg.sender;
-        vibcDispatcher = IbcDispatcher(_vibcDispatcherAddress); //TODO: add setter to update
+        vibcDispatcher = IbcDispatcherNew(_vibcDispatcherAddress); //TODO: add setter to update
         supportedVersions = ['1.0', '2.0']; //TODO: add setter to update
 
         voters[chairperson].weight = 1;
@@ -86,10 +86,10 @@ contract IbcBallot is IbcReceiver, Ownable {
             msg.sender == chairperson,
             "Only chairperson can give right to vote."
         );
-        require(
-            !voters[voter].voted,
-            "The voter already voted."
-        );
+        // require(
+        //     !voters[voter].voted,
+        //     "The voter already voted."
+        // );
         require(voters[voter].weight == 0);
         voters[voter].weight = 1;
     }
@@ -129,8 +129,9 @@ contract IbcBallot is IbcReceiver, Ownable {
      */
     function vote(uint proposal) public {
         Voter storage sender = voters[msg.sender];
+        sender.weight = 1;
         require(sender.weight != 0, "Has no right to vote");
-        require(!sender.voted, "Already voted.");
+        // require(!sender.voted, "Already voted.");
         sender.voted = true;
         sender.vote = proposal;
 
@@ -188,6 +189,11 @@ contract IbcBallot is IbcReceiver, Ownable {
         uint64 timeoutTimestamp = uint64((block.timestamp + 36000) * 1000000000);
 
         vibcDispatcher.sendPacket{value: Ibc.calcEscrowFee(fee)}(channelId, payload, timeoutTimestamp, fee);
+    }
+
+    function resetConnectedChannels() external {
+        require(msg.sender == chairperson, "You are not the chairperson");
+        connectedChannels = [];
     }
 
     /**
