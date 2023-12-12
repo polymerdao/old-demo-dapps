@@ -38,9 +38,10 @@ async function main() {
     )
     console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${accounts[1].address}`)
 
-    await new Promise((r) => setTimeout(r, 300000));
+    await new Promise((r) => setTimeout(r, 120000));
     
-    const acked = await ibcBallot(accounts[1].address).ibcNFTMinted;
+    const voter = await ibcBallot.voters(accounts[1].address);
+    const acked = voter.ibcNFTMinted;
     console.log("Packet lifecycle was concluded successfully: " + acked);
 }
 
