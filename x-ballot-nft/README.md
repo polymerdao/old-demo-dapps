@@ -30,7 +30,7 @@ You can find the deployed contract addresses here:
 | - | OP Sepolia | Base Sepolia |
 |-------------|-------------|-------------|
 | Dispatcher | 0x7a1d713f80BFE692D7b4Baa4081204C49735441E | 0x749053bBFe3f607382Ac6909556c4d0e03D6eAF0 |
-| IbcBallot | 0xd3cEB4716C9231A4C8b7B2bB2dC2b44F4F742b74 | X |
+| IbcBallot | 0x85aCE263423343Ae57811A80872D55882E420366 | X |
 | IbcProofOfVoteNFT | X | 0xA15c99eb3f52694bFfD57932dCa240552FCDCFfA |
 
 **When using the default values, there's nothing you should do**, when using custom values update accordingly in the `create-channel-ballot.js` adn `vote-and-send.js` scripts.

@@ -6,7 +6,7 @@
 // global scope, and execute the script.
 const hre = require('hardhat');
 
-const ibcBallotAddress = '0xd3cEB4716C9231A4C8b7B2bB2dC2b44F4F742b74' // add ibcBallot address when deployed
+const ibcBallotAddress = '0x85aCE263423343Ae57811A80872D55882E420366' // add ibcBallot address when deployed
 
 async function main() {
     const accounts = await hre.ethers.getSigners()
@@ -17,6 +17,20 @@ async function main() {
     );
     const chairperson = await ibcBallot.chairperson();
     console.log('Owner ' + chairperson)
+    
+    const voterAddr = accounts[1].address;
+    const voter = await ibcBallot.voters(voterAddr);
+
+    await ibcBallot.resetVoter(voterAddr);
+
+    if (voter.weight == 0) {
+        const tx = await ibcBallot.connect(accounts[0]).giveRightToVote(voterAddr);
+        console.log(`Chairperson gives right to vote to: ${voterAddr}`)
+    }
+
+    await ibcBallot.connect(accounts[1]).vote(1);
+
+    const recipient = voterAddr; // could be another account
 
     const fee = {
         recvFee: 0,
@@ -24,23 +38,15 @@ async function main() {
         timeoutFee: 0,
     };
 
-    const tx = await ibcBallot.connect(accounts[0]).giveRightToVote(accounts[1].address);
-    console.log(`Chairperson gives right to vote to: ${accounts[1].address}`)
-
-    const vote_tx = await ibcBallot.connect(accounts[1]).vote(1);
-
-    const recipient = accounts[1].address; // could be another account
-
-    const send_tx = await ibcBallot.sendMintNFTMsg(
-        accounts[1].address,
+    await ibcBallot.sendMintNFTMsg(
+        voterAddr,
         recipient,
         fee
     )
-    console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${accounts[1].address}`)
+    console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${voterAddr}`)
 
-    await new Promise((r) => setTimeout(r, 120000));
+    await new Promise((r) => setTimeout(r, 200000));
     
-    const voter = await ibcBallot.voters(accounts[1].address);
     const acked = voter.ibcNFTMinted;
     console.log("Packet lifecycle was concluded successfully: " + acked);
 }

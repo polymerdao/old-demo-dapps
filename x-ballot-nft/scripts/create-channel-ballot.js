@@ -7,7 +7,7 @@
 const hre = require('hardhat');
 
 const dispatcherAddr = '0x7a1d713f80BFE692D7b4Baa4081204C49735441E'
-const ibcBallotAddress = '0xd3cEB4716C9231A4C8b7B2bB2dC2b44F4F742b74' // add when IbcBallot contract is deployed
+const ibcBallotAddress = '0x85aCE263423343Ae57811A80872D55882E420366' // add when IbcBallot contract is deployed
 const ibcProofOfVoteNFTAddr = 'A15c99eb3f52694bFfD57932dCa240552FCDCFfA' // DROP '0x' !!! add when IbcProofOfVoteNFT is deployed on counterparty
 
 async function main() {
