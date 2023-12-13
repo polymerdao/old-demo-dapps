@@ -17,7 +17,7 @@ async function main() {
     );
     const chairperson = await ibcBallot.chairperson();
     console.log('Owner ' + chairperson)
-    
+
     const voterAddr = accounts[1].address;
     const voter = await ibcBallot.voters(voterAddr);
 
@@ -45,15 +45,22 @@ async function main() {
     )
     console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${voterAddr}`)
 
-    await new Promise((r) => setTimeout(r, 200000));
-    
-    const acked = voter.ibcNFTMinted;
-    console.log("Packet lifecycle was concluded successfully: " + acked);
+
+    for (var i = 0; i < 10; i++) {
+        try {
+            const acked = voter.ibcNFTMinted;
+            console.log("Packet lifecycle was concluded successfully: " + acked);
+            break
+        } catch {
+            console.log("ack not received. waiting...");
+            await new Promise((r) => setTimeout(r, 2000));
+        }
+    }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+    console.error(error);
+    process.exitCode = 1;
 });
