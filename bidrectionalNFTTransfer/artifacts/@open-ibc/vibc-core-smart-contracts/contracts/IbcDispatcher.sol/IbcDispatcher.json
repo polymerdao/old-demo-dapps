@@ -1,0 +1,153 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IbcDispatcher",
+  "sourceName": "@open-ibc/vibc-core-smart-contracts/contracts/IbcDispatcher.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "channelId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "closeIbcChannel",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IbcReceiver",
+          "name": "portAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "version",
+          "type": "string"
+        },
+        {
+          "internalType": "enum ChannelOrder",
+          "name": "ordering",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bool",
+          "name": "feeEnabled",
+          "type": "bool"
+        },
+        {
+          "internalType": "string[]",
+          "name": "connectionHops",
+          "type": "string[]"
+        },
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "portId",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "channelId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "version",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct CounterParty",
+          "name": "counterparty",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "uint64",
+                  "name": "revision_number",
+                  "type": "uint64"
+                },
+                {
+                  "internalType": "uint64",
+                  "name": "revision_height",
+                  "type": "uint64"
+                }
+              ],
+              "internalType": "struct Height",
+              "name": "proofHeight",
+              "type": "tuple"
+            },
+            {
+              "internalType": "bytes",
+              "name": "proof",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct Proof",
+          "name": "proof",
+          "type": "tuple"
+        }
+      ],
+      "name": "openIbcChannel",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "channelId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "payload",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint64",
+          "name": "timeoutTimestamp",
+          "type": "uint64"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "recvFee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ackFee",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timeoutFee",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct PacketFee",
+          "name": "fee",
+          "type": "tuple"
+        }
+      ],
+      "name": "sendPacket",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
