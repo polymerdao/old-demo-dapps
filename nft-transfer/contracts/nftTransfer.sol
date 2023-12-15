@@ -15,7 +15,7 @@ error invalidCounterPartyPortId();
  * @title mintAndTransfer
  * @dev can mint and NFT and transfer it to a destiniation chain via IBC
  */
-contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
+contract nftTransfer is IbcReceiver, Ownable, ERC721 {
     using Strings for uint256;
     string private constant TOKEN_URI =
         "https://raw.githubusercontent.com/bbehrman10/sampleNFTMetaData/main/metadata.json";
@@ -23,12 +23,14 @@ contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
     Counters.Counter private currentTokenId;
     mapping(uint256 => bool) private _lockedTokens; // You can either lock the NFT by setting this mapping (cheaper) or
     // mapping(uint256 => address) private _originalOwners; // You can lock the NFT by setting the owner as this contact and preserving the original owner (more secure)
+    event NFTMinted(address indexed owner, uint256 indexed tokenId);
     event NFTLocked(address indexed owner, uint256 indexed tokenId);
     event NFTUnlocked(address indexed owner, uint256 indexed tokenId);
     event NFTTransferred(
         address indexed owner,
         uint256 indexed tokenId,
-        address destinationAddress
+        address destinationAddress,
+        bytes packetData
     );
 
     struct NonFungibleTokenPacketData {
@@ -44,9 +46,9 @@ contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
     }
 
     constructor(
-        string memory _name,
-        string memory _symbol
-    ) ERC721(_name, _symbol) {
+        // string memory _name,
+        // string memory _symbol
+    ) ERC721("nftName", "SYM") {
         //run the mint function here to mint the NFT for the sake of this example
         mintNFT(msg.sender);
     }
@@ -54,6 +56,7 @@ contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
     function mintNFT(address recipient) public onlyOwner returns (uint256) {
         currentTokenId.increment();
         _safeMint(recipient, currentTokenId.current());
+        emit NFTMinted(recipient, currentTokenId.current());
         return currentTokenId.current();
     }
 
@@ -90,7 +93,7 @@ contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
         address recipientAddress,
         string memory memo,
         PacketFee calldata fee
-    ) internal {
+    ) internal  returns (bytes memory){
         require(_lockedTokens[tokenId] == true, "This token is not locked");
         NonFungibleTokenPacketData
             memory packetData = NonFungibleTokenPacketData({
@@ -112,14 +115,16 @@ contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
         uint64 timeoutTimestamp = uint64(
             (block.timestamp + 36000) * 1000000000
         );
-        bytes32 channelId = connectedChannels[0];
+        // uncomment when actually sending the packet
+        // bytes32 channelId = connectedChannels[0];
 
-        vibcDispatcher.sendPacket{value: Ibc.calcEscrowFee(fee)}(
-            channelId,
-            payload,
-            timeoutTimestamp,
-            fee
-        );
+        // vibcDispatcher.sendPacket{value: Ibc.calcEscrowFee(fee)}(
+        //     channelId,
+        //     payload,
+        //     timeoutTimestamp,
+        //     fee
+        // );
+        return payload;
     }
 
     function initiateNFTTransfer(
@@ -134,11 +139,12 @@ contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
         );
         lockNFT(tokenId);
         //transfer nft to destination chain
-        transferNFT(tokenId, msg.sender, destinationAddress, memo, fee);
+        bytes memory data = transferNFT(tokenId, msg.sender, destinationAddress, memo, fee);
         emit NFTTransferred(
             msg.sender,
             tokenId,
-            destinationAddress
+            destinationAddress,
+            data
         );
     }
 
@@ -244,7 +250,7 @@ contract bidirectionalNFT_A is IbcReceiver, Ownable, ERC721 {
         string calldata counterpartyPortId,
         bytes32 counterpartyChannelId,
         string calldata counterpartyVersion
-    ) external returns (string memory selectedVersion) {
+    ) external view returns (string memory selectedVersion) {
         if (bytes(counterpartyPortId).length <= 8) {
             revert invalidCounterPartyPortId();
         }
