@@ -6,7 +6,7 @@
 // global scope, and execute the script.
 const hre = require('hardhat');
 
-const ibcBallotAddress = '0x85aCE263423343Ae57811A80872D55882E420366' // add ibcBallot address when deployed
+const ibcBallotAddress = '0x4D77996E58D391C183231E52481DC1fFdD344A16' // add ibcBallot address when deployed
 
 async function main() {
     const accounts = await hre.ethers.getSigners()
