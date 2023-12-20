@@ -165,12 +165,11 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
     /**
      * @param voterAddress the address of the voter
      * @param recipient the address on the destination (Base) that will have NFT minted
-     * @param fee if the channel is fee enabled you add a fee for the relayer
      */
 
     function sendMintNFTMsg(
         address voterAddress,
-        address recipient,
+        address recipient
     ) external payable {
         require(voters[voterAddress].ibcNFTMinted == false, "Already has a ProofOfVote NFT minted on counterparty");
 

@@ -6,9 +6,9 @@
 // global scope, and execute the script.
 const hre = require('hardhat');
 
-const dispatcherAddr = '0x7a1d713f80BFE692D7b4Baa4081204C49735441E'
-const ibcBallotAddress = '0x85aCE263423343Ae57811A80872D55882E420366' // add when IbcBallot contract is deployed
-const ibcProofOfVoteNFTAddr = 'A15c99eb3f52694bFfD57932dCa240552FCDCFfA' // DROP '0x' !!! add when IbcProofOfVoteNFT is deployed on counterparty
+const dispatcherAddr = '0xD92B86315CBcf9cC612F0b0542E0bE5871bCa146'
+const ibcBallotAddress = '0x4D77996E58D391C183231E52481DC1fFdD344A16' // add when IbcBallot contract is deployed
+const ibcProofOfVoteNFTAddr = '09D3c894a926921Dd36285464dA6d9934c49f555' // DROP '0x' !!! add when IbcProofOfVoteNFT is deployed on counterparty
 
 async function main() {
 
