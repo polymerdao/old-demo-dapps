@@ -32,16 +32,9 @@ async function main() {
 
     const recipient = voterAddr; // could be another account
 
-    const fee = {
-        recvFee: 0,
-        ackFee: 0,
-        timeoutFee: 0,
-    };
-
     await ibcBallot.sendMintNFTMsg(
         voterAddr,
-        recipient,
-        fee
+        recipient
     )
     console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${voterAddr}`)
 

@@ -6,8 +6,6 @@ import './vibc-core/Ibc.sol';
 import './vibc-core/IbcReceiver.sol';
 import './vibc-core/IbcDispatcher.sol';
 
-error invalidCounterPartyPortId();
-
 /** 
  * @title IbcBallot
  * @dev Implements voting process along with vote delegation, 
@@ -173,7 +171,6 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
     function sendMintNFTMsg(
         address voterAddress,
         address recipient,
-        PacketFee calldata fee
     ) external payable {
         require(voters[voterAddress].ibcNFTMinted == false, "Already has a ProofOfVote NFT minted on counterparty");
 

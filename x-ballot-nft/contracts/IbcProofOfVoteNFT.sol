@@ -8,8 +8,6 @@ import './vibc-core/Ibc.sol';
 import './vibc-core/IbcReceiver.sol';
 import './vibc-core/IbcDispatcher.sol';
 
-error invalidCounterPartyPortId();
-
 contract IbcProofOfVoteNFT is ERC721, IbcReceiver, IbcReceiverBase {
     using Counters for Counters.Counter;
     Counters.Counter private currentTokenId;
