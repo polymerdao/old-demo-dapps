@@ -2,10 +2,9 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
-import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/Ibc.sol';
-import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcReceiver.sol';
-import './IbcDispatcherNew.sol';
+import './vibc-core/Ibc.sol';
+import './vibc-core/IbcReceiver.sol';
+import './vibc-core/IbcDispatcher.sol';
 
 error invalidCounterPartyPortId();
 
@@ -14,7 +13,7 @@ error invalidCounterPartyPortId();
  * @dev Implements voting process along with vote delegation, 
  * and ability to send cross-chain instruction to mint NFT on counterparty
  */
-contract IbcBallot is IbcReceiver, Ownable {
+contract IbcBallot is IbcReceiverBase, IbcReceiver {
 
     struct Voter {
         uint weight; // weight is accumulated by delegation
@@ -52,16 +51,13 @@ contract IbcBallot is IbcReceiver, Ownable {
 
     string[] public supportedVersions;
 
-    // vIBC core Dispatcher address on OP sepolia
-    IbcDispatcherNew public vibcDispatcher; //'0x7a1d713f80BFE692D7b4Baa4081204C49735441E'
 
     /** 
      * @dev Create a new ballot to choose one of 'proposalNames'.
      * @param proposalNames names of proposals
      */
-    constructor(bytes32[] memory proposalNames, address _vibcDispatcherAddress) {
+    constructor(bytes32[] memory proposalNames, IbcDispatcher _dispatcher) IbcReceiverBase(_dispatcher) {
         chairperson = msg.sender;
-        vibcDispatcher = IbcDispatcherNew(_vibcDispatcherAddress); //TODO: add setter to update
         supportedVersions = ['1.0', '2.0']; //TODO: add setter to update
 
         voters[chairperson].weight = 1;
@@ -188,7 +184,7 @@ contract IbcBallot is IbcReceiver, Ownable {
         bytes32 channelId = connectedChannels[0]; 
         uint64 timeoutTimestamp = uint64((block.timestamp + 36000) * 1000000000);
 
-        vibcDispatcher.sendPacket{value: Ibc.calcEscrowFee(fee)}(channelId, payload, timeoutTimestamp, fee);
+        dispatcher.sendPacket(channelId, payload, timeoutTimestamp);
     }
 
     // Utility functions
@@ -219,8 +215,8 @@ contract IbcBallot is IbcReceiver, Ownable {
         Proof calldata proof
         ) external {
 
-        vibcDispatcher.openIbcChannel(
-            IbcReceiver(address(this)),
+        dispatcher.openIbcChannel(
+            IbcChannelReceiver(address(this)),
             supportedVersions[0],
             ChannelOrder.UNORDERED,
             feeEnabled,
@@ -235,11 +231,11 @@ contract IbcBallot is IbcReceiver, Ownable {
      */
 
     // @dev This function needs to be implemented to satisfy IbcReceiver interface, but should be a no-op
-    function onRecvPacket(IbcPacket calldata packet) external returns (AckPacket memory ackPacket) {
+    function onRecvPacket(IbcPacket calldata packet) external onlyIbcDispatcher returns (AckPacket memory ackPacket) {
         return AckPacket(false, abi.encodePacked('{ "account": "account", "reply": "function should not be triggered" }'));
     }
 
-    function onAcknowledgementPacket(IbcPacket calldata packet, AckPacket calldata ack) external {
+    function onAcknowledgementPacket(IbcPacket calldata packet, AckPacket calldata ack) external onlyIbcDispatcher {
         ackPackets.push(ack);
 
         // decode the ack data, find the address of the voter the packet belongs to and set ibcNFTMinted true
@@ -247,7 +243,7 @@ contract IbcBallot is IbcReceiver, Ownable {
         voters[voterAddress].ibcNFTMinted = true;
     }
 
-    function onTimeoutPacket(IbcPacket calldata packet) external {
+    function onTimeoutPacket(IbcPacket calldata packet) external onlyIbcDispatcher {
         timeoutPackets.push(packet);
     }
    
@@ -263,7 +259,7 @@ contract IbcBallot is IbcReceiver, Ownable {
         string calldata counterpartyPortId,
         bytes32 counterpartyChannelId,
         string calldata counterpartyVersion
-    ) external returns (string memory selectedVersion) {
+    ) external onlyIbcDispatcher returns (string memory selectedVersion) {
         if (bytes(counterpartyPortId).length <= 8) {
             revert invalidCounterPartyPortId();
         }
@@ -292,7 +288,7 @@ contract IbcBallot is IbcReceiver, Ownable {
         bytes32 channelId,
         bytes32 counterpartyChannelId,
         string calldata counterpartyVersion
-    ) external {
+    ) external onlyIbcDispatcher {
         // ensure negotiated version is supported
         bool foundVersion = false;
         for (uint i = 0; i < supportedVersions.length; i++) {
@@ -309,7 +305,7 @@ contract IbcBallot is IbcReceiver, Ownable {
         bytes32 channelId,
         string calldata counterpartyPortId,
         bytes32 counterpartyChannelId
-    ) external {
+    ) external onlyIbcDispatcher {
         // logic to determin if the channel should be closed
         bool channelFound = false;
         for (uint i = 0; i < connectedChannels.length; i++) {
