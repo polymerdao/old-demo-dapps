@@ -5,27 +5,42 @@ pragma solidity >=0.8.2 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@open-ibc/vibc-core-smart-contracts/contracts/Ibc.sol";
-import "@open-ibc/vibc-core-smart-contracts/contracts/IbcReceiver.sol";
-import "@open-ibc/vibc-core-smart-contracts/contracts/IbcDispatcher.sol";
-
-error invalidCounterPartyPortId();
+import "./vibc-core/Ibc.sol";
+import "./vibc-core/IbcReceiver.sol";
+import "./vibc-core/IbcDispatcher.sol";
 
 /**
  * @title mintAndTransfer
- * @dev can mint and NFT and transfer it to a destiniation chain via IBC
+ * @dev can mint and NFT and transfer it to a destination chain via IBC
  */
-contract nftTransfer is IbcReceiver, Ownable, ERC721 {
+contract nftTransfer is IbcReceiver, IbcReceiverBase, ERC721 {
     using Strings for uint256;
-    string private constant TOKEN_URI =
-        "https://raw.githubusercontent.com/bbehrman10/sampleNFTMetaData/main/metadata.json";
     using Counters for Counters.Counter;
+
+    string private constant TOKEN_URI =
+        "https://imgur.com/a/xRmS8hA";
     Counters.Counter private currentTokenId;
-    mapping(uint256 => bool) private _lockedTokens; // You can either lock the NFT by setting this mapping (cheaper) or
-    // mapping(uint256 => address) private _originalOwners; // You can lock the NFT by setting the owner as this contact and preserving the original owner (more secure)
+    mapping(uint256 => bool) private _lockedTokens;
+
+    string[] public supportedVersions;
+    bytes32[] public connectedChannels;
+
+    AckPacket[] public ackPackets;
+    IbcPacket[] public timeoutPackets;
+    IbcPacket[] public recvedPackets;
+
+    //DEBUGGER EVENTS
+    event packetTest(bytes packetData);
+    //DEBUGGER EVENTS
+
     event NFTMinted(address indexed owner, uint256 indexed tokenId);
     event NFTLocked(address indexed owner, uint256 indexed tokenId);
     event NFTUnlocked(address indexed owner, uint256 indexed tokenId);
+    event AckPacketReceived(
+        uint256 indexed tokenId,
+        address destinationAddress,
+        bytes packetData
+    );
     event NFTTransferred(
         address indexed owner,
         uint256 indexed tokenId,
@@ -46,11 +61,12 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
     }
 
     constructor(
-        // string memory _name,
-        // string memory _symbol
-    ) ERC721("nftName", "SYM") {
-        //run the mint function here to mint the NFT for the sake of this example
-        mintNFT(msg.sender);
+        IbcDispatcher _dispatcher,
+        string memory nftName,
+        string memory nftSymbol
+    ) ERC721(nftName, nftSymbol) IbcReceiverBase(_dispatcher) {
+        supportedVersions.push("1.0");
+        supportedVersions.push("2.0");
     }
 
     function mintNFT(address recipient) public onlyOwner returns (uint256) {
@@ -58,14 +74,6 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
         _safeMint(recipient, currentTokenId.current());
         emit NFTMinted(recipient, currentTokenId.current());
         return currentTokenId.current();
-    }
-
-    function tokenURI(uint256 tokenId) virtual override public view returns (string memory) {
-        require(
-            _exists(tokenId),
-            "ERC721Metadata: URI query for nonexistent token"
-        );
-        return TOKEN_URI;
     }
 
     function lockNFT(uint256 tokenId) internal {
@@ -76,6 +84,16 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
     function unlockNFT(uint256 tokenId) internal {
         _lockedTokens[tokenId] = false;
         emit NFTUnlocked(ownerOf(tokenId), tokenId);
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
+        return TOKEN_URI;
     }
 
     function getClassId(uint256 tokenId) public view returns (string memory) {
@@ -91,14 +109,13 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
         uint256 tokenId,
         address senderAddress,
         address recipientAddress,
-        string memory memo,
-        PacketFee calldata fee
-    ) internal  returns (bytes memory){
+        string memory memo
+    ) internal returns (bytes memory) {
         require(_lockedTokens[tokenId] == true, "This token is not locked");
         NonFungibleTokenPacketData
             memory packetData = NonFungibleTokenPacketData({
                 classId: getClassId(tokenId),
-                classUri: "https://raw.githubusercontent.com/bbehrman10/sampleNFTMetaData/main/metadata.json",
+                classUri: TOKEN_URI,
                 classData: "",
                 tokenIds: new string[](1),
                 tokenUris: new string[](1),
@@ -107,75 +124,79 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
                 receiver: recipientAddress,
                 memo: memo
             });
-        packetData.tokenIds[0] = tokenId.toString();
+        packetData.tokenIds[0] = "5";//tokenId.toString();
         packetData.tokenUris[0] = tokenURI(tokenId);
-        packetData.tokenData[0] = "additional data here";
+        packetData.tokenData[0] = "The first ever cross chain Polymer NFT!";
 
         bytes memory payload = abi.encode(packetData);
         uint64 timeoutTimestamp = uint64(
-            (block.timestamp + 36000) * 1000000000
+            (block.timestamp + 36000) * 100000000
         );
-        // uncomment when actually sending the packet
-        // bytes32 channelId = connectedChannels[0];
+        bytes32 channelId = connectedChannels[0];
 
-        // vibcDispatcher.sendPacket{value: Ibc.calcEscrowFee(fee)}(
-        //     channelId,
-        //     payload,
-        //     timeoutTimestamp,
-        //     fee
-        // );
+        dispatcher.sendPacket(channelId, payload, timeoutTimestamp);
         return payload;
     }
 
     function initiateNFTTransfer(
         uint256 tokenId,
         address destinationAddress,
-        string memory memo,
-        PacketFee calldata fee
+        string memory memo
     ) public {
         require(
             ownerOf(tokenId) == msg.sender,
             "You are not the owner of this token"
         );
         lockNFT(tokenId);
-        //transfer nft to destination chain
-        bytes memory data = transferNFT(tokenId, msg.sender, destinationAddress, memo, fee);
-        emit NFTTransferred(
-            msg.sender,
+        bytes memory data = transferNFT(
             tokenId,
+            msg.sender,
             destinationAddress,
-            data
+            memo
         );
+        emit NFTTransferred(msg.sender, tokenId, destinationAddress, data);
     }
 
-    ///*** IBC storage variables ***///
+    function getAllTokens() public view returns (uint256[] memory) {
+        uint256 tokenCount = currentTokenId.current();
+        uint256[] memory tokens = new uint256[](tokenCount);
 
-    // received ack packet as chain A
-    AckPacket[] public ackPackets;
-    // received timeout packet as chain A
-    IbcPacket[] public timeoutPackets;
-    IbcPacket[] public recvedPackets;
-    bytes32[] public connectedChannels;
+        for (uint256 i = 0; i < tokenCount; i++) {
+            tokens[i] = i + 1;
+        }
 
-    string[] public supportedVersions;
+        return tokens;
+    }
 
-    // vIBC core Dispatcher address on OP sepolia
-    IbcDispatcher public vibcDispatcher; //'0x7a1d713f80BFE692D7b4Baa4081204C49735441E'
+    function getMyTokens() public view returns (uint256[] memory) {
+        uint256 tokenCount = balanceOf(msg.sender);
+        if (tokenCount == 0) {
+            return new uint256[](0);
+        } else {
+            uint256[] memory result = new uint256[](tokenCount);
+            uint256 totalTokens = currentTokenId.current();
+            uint256 resultIndex = 0;
 
-    /**
-     *
-     * @param feeEnabled in production, you'll want to enable this to avoid spamming create channel calls (costly for relayers)
-     * @param connectionHops 2 connection hops to connect to the destination via Polymer
-     * @param counterparty the address of the destination chain contract you want to connect to
-     * @param proof not implemented for now
-     */
+            for (uint256 tokenId = 1; tokenId <= totalTokens; tokenId++) {
+                if (ownerOf(tokenId) == msg.sender) {
+                    result[resultIndex] = tokenId;
+                    resultIndex++;
+                }
+            }
+
+            return result;
+        }
+    }
+
+    // IBC Packet Callbacks
+
     function createChannel(
         bool feeEnabled,
         string[] calldata connectionHops,
         CounterParty calldata counterparty,
         Proof calldata proof
     ) external {
-        vibcDispatcher.openIbcChannel(
+        dispatcher.openIbcChannel(
             IbcReceiver(address(this)),
             supportedVersions[0],
             ChannelOrder.UNORDERED,
@@ -186,27 +207,10 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
         );
     }
 
-    function stringToUint(string memory s) internal pure returns (uint256) {
-        uint256 result = 0;
-        bytes memory b = bytes(s);
-        for (uint i = 0; i < b.length; i++) {
-            if (b[i] >= 0x30 && b[i] <= 0x39) {
-                result = result * 10 + (uint256(uint8(b[i])) - 48);
-            } else {
-                // Character is not a number
-                revert("String contains non-numeric characters");
-            }
-        }
-        return result;
-    }
-
-    /**
-     * IBC Packet Callbacks
-     */
-
     function onRecvPacket(
         IbcPacket calldata packet
     ) external returns (AckPacket memory ackPacket) {
+                emit packetTest(packet.data);
         recvedPackets.push(packet);
         // decode the packet data and unlock or mint the NFT
         NonFungibleTokenPacketData memory decodedPacketData = abi.decode(
@@ -223,7 +227,7 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
             decodedPacketData.receiver,
             decodedPacketData.tokenIds[0]
         );
-        return AckPacket(true, ackData);
+        return AckPacket(true, '');//ackData
     }
 
     function onAcknowledgementPacket(
@@ -232,16 +236,18 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
     ) external {
         ackPackets.push(ack);
         // decode the ack data and do something with it
+        emit AckPacketReceived(
+            stringToUint(abi.decode(ack.data, (string))),
+            abi.decode(ack.data, (address)),
+            packet.data
+        );
     }
 
     function onTimeoutPacket(IbcPacket calldata packet) external {
         timeoutPackets.push(packet);
     }
 
-    /**
-     * IBC Channel Callbacks
-     */
-
+    // IBC Channel Callbacks
     function onOpenIbcChannel(
         string calldata version,
         ChannelOrder ordering,
@@ -254,12 +260,6 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
         if (bytes(counterpartyPortId).length <= 8) {
             revert invalidCounterPartyPortId();
         }
-        /**
-         * Version selection is determined by if the callback is invoked on behalf of ChanOpenInit or ChanOpenTry.
-         * ChanOpenInit: self version should be provided whereas the counterparty version is empty.
-         * ChanOpenTry: counterparty version should be provided whereas the self version is empty.
-         * In both cases, the selected version should be in the supported versions list.
-         */
         bool foundVersion = false;
         selectedVersion = keccak256(abi.encodePacked(version)) ==
             keccak256(abi.encodePacked(""))
@@ -314,5 +314,20 @@ contract nftTransfer is IbcReceiver, Ownable, ERC721 {
             }
         }
         require(channelFound, "Channel not found");
+    }
+
+    // Utility Functions
+    function stringToUint(string memory s) internal pure returns (uint256) {
+        uint256 result = 0;
+        bytes memory b = bytes(s);
+        for (uint i = 0; i < b.length; i++) {
+            if (b[i] >= 0x30 && b[i] <= 0x39) {
+                result = result * 10 + (uint256(uint8(b[i])) - 48);
+            } else {
+                // Character is not a number
+                revert("String contains non-numeric characters");
+            }
+        }
+        return result;
     }
 }

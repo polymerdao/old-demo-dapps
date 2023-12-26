@@ -12,6 +12,8 @@
   "dependencies": {
     "@open-ibc/vibc-core-smart-contracts": "^0.0.16",
     "@openzeppelin/contracts": "^4.9.5",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.1",
     "hardhat": "^2.19.2"
   },
   "devDependencies": {
