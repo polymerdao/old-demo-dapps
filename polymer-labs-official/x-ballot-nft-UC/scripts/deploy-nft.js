@@ -7,10 +7,10 @@
 const hre = require("hardhat");
 
 async function main() {
-  const dispatcherAddr = '0xab6AEF0311954C40AcD4D1DED56CAAE9cc074975';
+  const ucMwAddr = '0xfcef85E0F0Afd1Acd73fAF1648266DF923d4521d';
   const tokenURI = 'https://cdn.discordapp.com/attachments/841255110721929216/1092765295388676146/bc19-4725-b503-d375e88692b3.png?ex=6581777d&is=656f027d&hm=39c445ad33e663dfa03c8c59a7f88a15cd02218490f97c5ec8ed96d11475c184&'
   
-  const ibcNFT = await hre.ethers.deployContract("IbcProofOfVoteNFT", [dispatcherAddr, tokenURI]);
+  const ibcNFT = await hre.ethers.deployContract("IbcProofOfVoteNFT", [ucMwAddr, tokenURI]);
 
   await ibcNFT.waitForDeployment();
 
