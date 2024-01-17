@@ -4,14 +4,11 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import '@openzeppelin/contracts/access/Ownable.sol';
-import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/Ibc.sol';
-import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcReceiver.sol';
-import '../node_modules/@open-ibc/vibc-core-smart-contracts/contracts/IbcDispatcher.sol';
+import './vibc-core/Ibc.sol';
+import './vibc-core/IbcReceiver.sol';
+import './vibc-core/IbcDispatcher.sol';
 
-error invalidCounterPartyPortId();
-
-contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
+contract IbcProofOfVoteNFT is ERC721, IbcReceiver, IbcReceiverBase {
     using Counters for Counters.Counter;
     Counters.Counter private currentTokenId;
 
@@ -30,14 +27,12 @@ contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
 
     string tokenURIPolyVote;
 
-    // vIBC core Dispatcher address on Base Sepolia
-    IbcDispatcher public vibcDispatcher;
-
-    constructor(address _vibcDispatcherAddress, string memory _tokenURIPolyVote) ERC721("PolyVoter", "POLYV") {
-        vibcDispatcher = IbcDispatcher(_vibcDispatcherAddress);
-        supportedVersions = ['1.0', '2.0'];
-        tokenURIPolyVote = _tokenURIPolyVote;
-    }
+    constructor(IbcDispatcher _dispatcher, string memory _tokenURIPolyVote) 
+        ERC721("PolyVoter", "POLYV") IbcReceiverBase(_dispatcher) 
+        {
+            supportedVersions = ['1.0', '2.0'];
+            tokenURIPolyVote = _tokenURIPolyVote;
+        }
 
     function mint(address recipient)
         public
@@ -65,7 +60,7 @@ contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
       * 
       */    
     
-    function onRecvPacket(IbcPacket calldata packet) external returns (AckPacket memory ackPacket) {
+    function onRecvPacket(IbcPacket calldata packet) external onlyIbcDispatcher returns (AckPacket memory ackPacket) {
         recvedPackets.push(packet);
 
         (address decodedVoter, address decodedRecipient, uint decodedVoteId) = abi.decode(packet.data, (address, address, uint));
@@ -78,12 +73,12 @@ contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
     }
 
     // should not be called
-    function onAcknowledgementPacket(IbcPacket calldata packet, AckPacket calldata ack) external {
+    function onAcknowledgementPacket(IbcPacket calldata packet, AckPacket calldata ack) external onlyIbcDispatcher {
         // TODO add error
     }
 
     // should not be called
-    function onTimeoutPacket(IbcPacket calldata packet) external {
+    function onTimeoutPacket(IbcPacket calldata packet) external onlyIbcDispatcher {
         // TODO add error
     }
 
@@ -101,7 +96,7 @@ contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
         string calldata counterpartyPortId,
         bytes32 counterpartyChannelId,
         string calldata counterpartyVersion
-    ) external returns (string memory selectedVersion) {
+    ) external onlyIbcDispatcher returns (string memory selectedVersion) {
         if (bytes(counterpartyPortId).length <= 8) {
             revert invalidCounterPartyPortId();
         }
@@ -130,7 +125,7 @@ contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
         bytes32 channelId,
         bytes32 counterpartyChannelId,
         string calldata counterpartyVersion
-    ) external {
+    ) external onlyIbcDispatcher {
         // ensure negotiated version is supported
         bool foundVersion = false;
         for (uint i = 0; i < supportedVersions.length; i++) {
@@ -147,7 +142,7 @@ contract IbcProofOfVoteNFT is ERC721, IbcReceiver, Ownable {
         bytes32 channelId,
         string calldata counterpartyPortId,
         bytes32 counterpartyChannelId
-    ) external {
+    ) external onlyIbcDispatcher {
         // logic to determin if the channel should be closed
         bool channelFound = false;
         for (uint i = 0; i < connectedChannels.length; i++) {

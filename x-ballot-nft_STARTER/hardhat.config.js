@@ -6,12 +6,6 @@ require('dotenv').config();
 module.exports = {
   solidity: {
     version: '0.8.20',
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200 // Optimize for a typical number of runs
-      }
-    }    
   },
   networks: {
     // for Base testnet
