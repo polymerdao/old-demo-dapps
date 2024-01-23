@@ -43,13 +43,9 @@ To add your repository as a git submodule:
    ```
 4. **Create a Pull Request:** Submit a pull request with your changes.
 
-## Contribution Guidelines
-
-Before contributing, please read our [Contribution Guidelines](LINK_TO_GUIDELINES). This includes coding standards, documentation expectations, and more.
-
 ## Acknowledgments
 
-Contributors are the heartbeat of this project! We maintain a [Contributors List](LINK_TO_CONTRIBUTORS_FILE) to acknowledge the hard work and dedication of everyone who contributes.
+Contributors are the heartbeat of this project! We will add a contributors list soon to acknowledge the hard work and dedication of everyone who contributes.
 
 ## Questions or Suggestions?
 
