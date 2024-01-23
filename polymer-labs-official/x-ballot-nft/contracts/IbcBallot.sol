@@ -123,6 +123,7 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
      */
     function vote(uint proposal) public {
         Voter storage sender = voters[msg.sender];
+        // FOR TESTING ONLY
         sender.weight = 1;
         require(sender.weight != 0, "Has no right to vote");
         // require(!sender.voted, "Already voted.");
