@@ -15,36 +15,36 @@ async function main() {
         'IbcBallot',
         ibcBallotAddress
     );
+
     const chairperson = await ibcBallot.chairperson();
-    console.log('Owner ' + chairperson)
+    console.log('Owner: ' + chairperson)
     
     const voterAddr = accounts[1].address;
+    // The very first time an account votes, the chairperson must give them the right to vote
     const voter = await ibcBallot.voters(voterAddr);
 
-    await ibcBallot.resetVoter(voterAddr);
-
     if (voter.weight == 0) {
-        const tx = await ibcBallot.connect(accounts[0]).giveRightToVote(voterAddr);
+        await ibcBallot.connect(accounts[0]).giveRightToVote(voterAddr);
         console.log(`Chairperson gives right to vote to: ${voterAddr}`)
     }
 
+    // To test the packet lifecycle multiple times using the same account, we need to reset the voter's state
+
+    await ibcBallot.resetVoter(voterAddr);
+
+    // Vote first before sending the packet
     await ibcBallot.connect(accounts[1]).vote(1);
 
     const recipient = voterAddr; // could be another account
 
-    const fee = {
-        recvFee: 0,
-        ackFee: 0,
-        timeoutFee: 0,
-    };
-
+    // Send the packet
     await ibcBallot.sendMintNFTMsg(
         voterAddr,
-        recipient,
-        fee
+        recipient
     )
     console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${voterAddr}`)
 
+    // Active waiting for the packet to be received and acknowledged
     let acked = false;
     let counter = 0;
     do {
