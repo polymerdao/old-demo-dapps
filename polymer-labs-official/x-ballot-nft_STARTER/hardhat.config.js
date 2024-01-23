@@ -16,7 +16,6 @@ module.exports = {
         process.env.BASE_WALLET_KEY_2,
         process.env.BASE_WALLET_KEY_3,
       ],
-      //gasPrice: 1000000000,
     },
     // for OP testnet
     'op-sepolia': {
@@ -26,8 +25,7 @@ module.exports = {
         process.env.OP_WALLET_KEY_2, 
         process.env.OP_WALLET_KEY_3,
       ],
-      //gasPrice: 1000000000,
     },    
   },
-  defaultNetwork: 'hardhat',
+  defaultNetwork: 'op-sepolia',
 };
