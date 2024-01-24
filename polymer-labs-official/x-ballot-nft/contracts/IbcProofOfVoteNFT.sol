@@ -4,9 +4,9 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import './vibc-core/Ibc.sol';
-import './vibc-core/IbcReceiver.sol';
-import './vibc-core/IbcDispatcher.sol';
+import '../vibc-core/contracts/Ibc.sol';
+import '../vibc-core/contracts/IbcReceiver.sol';
+import '../vibc-core/contracts/IbcDispatcher.sol';
 
 contract IbcProofOfVoteNFT is ERC721, IbcReceiver, IbcReceiverBase {
     using Counters for Counters.Counter;

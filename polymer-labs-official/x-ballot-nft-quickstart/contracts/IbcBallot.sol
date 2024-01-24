@@ -2,10 +2,10 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import './vibc-core/Ibc.sol';
-import './vibc-core/IbcReceiver.sol';
-import './vibc-core/IbcDispatcher.sol';
-import './vibc-core/IbcMiddleware.sol';
+import '../vibc-core/contracts/Ibc.sol';
+import '../vibc-core/contracts/IbcReceiver.sol';
+import '../vibc-core/contracts/IbcDispatcher.sol';
+import '../vibc-core/contracts/IbcMiddleware.sol';
 
 /** 
  * @title IbcBallot
