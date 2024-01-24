@@ -7,7 +7,7 @@
 const hre = require('hardhat');
 
 const ibcBallotAddress = '0x6e65AA34035D87f341E17b49be995ee0C50A505c' // add ibcBallot address when deployed
-const IbcProofOfVoteNFTAddr = '0x04bD80D9bAbFC15Cb8411965A750b38cB8266eDf'
+const ibcProofOfVoteNFTAddr = '0x04bD80D9bAbFC15Cb8411965A750b38cB8266eDf'
 
 async function main() {
     const accounts = await hre.ethers.getSigners()
@@ -17,10 +17,10 @@ async function main() {
         ibcBallotAddress
     );
     
-    const voterAddr = accounts[2].address;
+    const voterAddr = accounts[0].address;
 
     // Vote first before sending the packet
-    await ibcBallot.connect(accounts[2]).vote(1);
+    await ibcBallot.connect(accounts[0]).vote(1);
 
     const recipient = voterAddr; // could be another account
 
@@ -28,7 +28,7 @@ async function main() {
     await ibcBallot.sendMintNFTMsg(
         voterAddr,
         recipient,
-        IbcProofOfVoteNFTAddr
+        ibcProofOfVoteNFTAddr
     )
     console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${voterAddr}`)
 
