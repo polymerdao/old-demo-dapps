@@ -6,8 +6,8 @@
 // global scope, and execute the script.
 const hre = require('hardhat');
 
-const ibcBallotAddress = '0xF30921b3b7173EeD0196279b25f9d88181c8d944' // add ibcBallot address when deployed
-const IbcProofOfVoteNFTAddr = '0x04bD80D9bAbFC15Cb8411965A750b38cB8266eDf'
+const ibcBallotAddress = '' // add ibcBallot address when deployed
+const ibcProofOfVoteNFTAddr = '' // add ibcProofOfVoteNFT address when deployed
 
 async function main() {
     const accounts = await hre.ethers.getSigners()
@@ -42,7 +42,7 @@ async function main() {
     await ibcBallot.sendMintNFTMsg(
         voterAddr,
         recipient,
-        IbcProofOfVoteNFTAddr
+        ibcProofOfVoteNFTAddr
     )
     console.log(`Sending packet to mint NFT for ${recipient} relating to vote cast by ${voterAddr}`)
 

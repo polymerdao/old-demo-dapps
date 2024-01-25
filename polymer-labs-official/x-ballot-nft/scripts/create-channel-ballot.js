@@ -7,8 +7,13 @@
 const hre = require('hardhat');
 
 const dispatcherAddr = '0xD92B86315CBcf9cC612F0b0542E0bE5871bCa146'
-const ibcBallotAddress = '0x4D77996E58D391C183231E52481DC1fFdD344A16' // add when IbcBallot contract is deployed
-const ibcProofOfVoteNFTAddr = '09D3c894a926921Dd36285464dA6d9934c49f555' // DROP '0x' !!! add when IbcProofOfVoteNFT is deployed on counterparty
+const ibcBallotAddress = '' // add when IbcBallot contract is deployed
+const ibcProofOfVoteNFTAddr = '' // add when IbcProofOfVoteNFT is deployed on counterparty
+
+function addressToPortId(portPrefix, address) {
+  const suffix = address.slice(2);
+  return `${portPrefix}.${suffix}`;
+}
 
 async function main() {
 
@@ -26,7 +31,7 @@ async function main() {
     false,
     ['connection-2', 'connection-1'],
     {
-        portId: `polyibc.base.${ibcProofOfVoteNFTAddr}`,
+        portId: `${addressToPortId('polyibc.base',ibcProofOfVoteNFTAddr)}`,
         channelId: hre.ethers.encodeBytes32String(''),
         version: '',
     },
