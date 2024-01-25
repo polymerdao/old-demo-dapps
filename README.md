@@ -12,13 +12,11 @@ This repository is divided into two main directories:
 
 ## Cloning git Submodules
 
-This repo depends on Polymer's [vibc-core-smart-contracts](htpps://github.com/open-ibc/vibc-core-smart-contracts) which are tracked as git submodules.
+This repo depends on Polymer's [vibc-core-smart-contracts](https://github.com/open-ibc/vibc-core-smart-contracts) which are tracked as git submodules.
 
 When cloning the repo, run this command additionally:
 ```bash
 git submodule update --init --recursive
-```
-Read more about git submodules [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 ## Contributing to the Community Directory
 
