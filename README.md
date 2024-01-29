@@ -10,6 +10,14 @@ This repository is divided into two main directories:
 
 - **`/community`**: A vibrant space for community members to contribute their own demo apps. There are two ways to contribute: by adding code directly to this repository or by linking to your own repository.
 
+## Cloning git Submodules
+
+This repo depends on Polymer's [vibc-core-smart-contracts](https://github.com/open-ibc/vibc-core-smart-contracts) which are tracked as git submodules.
+
+When cloning the repo, run this command additionally:
+```bash
+git submodule update --init --recursive
+
 ## Contributing to the Community Directory
 
 We welcome and encourage contributions from our community! Here’s how you can contribute:

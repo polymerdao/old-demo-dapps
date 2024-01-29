@@ -6,7 +6,7 @@
 // global scope, and execute the script.
 const hre = require('hardhat');
 
-const ibcBallotAddress = '0x6e65AA34035D87f341E17b49be995ee0C50A505c' // add ibcBallot address when deployed
+const ibcBallotAddress = '0x6e65AA34035D87f341E17b49be995ee0C50A505c'
 const ibcProofOfVoteNFTAddr = '0x04bD80D9bAbFC15Cb8411965A750b38cB8266eDf'
 
 async function main() {

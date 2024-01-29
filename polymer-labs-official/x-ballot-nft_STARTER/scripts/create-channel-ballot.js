@@ -10,6 +10,11 @@ const dispatcherAddr = '0xD92B86315CBcf9cC612F0b0542E0bE5871bCa146'
 const ibcBallotAddress = '' // add when IbcBallot contract is deployed
 const ibcProofOfVoteNFTAddr = '' // DROP '0x' !!! add when IbcProofOfVoteNFT is deployed on counterparty
 
+function addressToPortId(portPrefix, address) {
+  const suffix = address.slice(2);
+  return `${portPrefix}.${suffix}`;
+}
+
 async function main() {
 
     const dispatcher = await hre.ethers.getContractAt(
@@ -26,7 +31,7 @@ async function main() {
     false,
     ['connection-2', 'connection-1'],
     {
-        portId: `polyibc.base.${ibcProofOfVoteNFTAddr}`,
+        portId: `${addressToPortId("polyibc.base", ibcProofOfVoteNFTAddr)}`,
         channelId: hre.ethers.encodeBytes32String(''),
         version: '',
     },
