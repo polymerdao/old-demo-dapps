@@ -17,6 +17,7 @@ This repo depends on Polymer's [vibc-core-smart-contracts](https://github.com/op
 When cloning the repo, run this command additionally:
 ```bash
 git submodule update --init --recursive
+```
 
 ## Contributing to the Community Directory
 
