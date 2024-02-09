@@ -5,15 +5,14 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require('hardhat');
-
-const ibcBallotAddress = '' // add ibcBallot address when deployed
+const config = require('../config.json').sendPacket;
 
 async function main() {
     const accounts = await hre.ethers.getSigners()
 
     const ibcBallot = await hre.ethers.getContractAt(
         'IbcBallot',
-        ibcBallotAddress
+        config.srcAddr
     );
 
     const chairperson = await ibcBallot.chairperson();
@@ -37,8 +36,13 @@ async function main() {
 
     const recipient = voterAddr; // could be another account
 
+
+    const channelIdBytes = hre.ethers.encodeBytes32String(config.srcChannelId);
+    const timeoutSeconds = config.timeout;
     // Send the packet
     await ibcBallot.sendMintNFTMsg(
+        channelIdBytes,
+        timeoutSeconds,
         voterAddr,
         recipient
     )
