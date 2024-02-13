@@ -17,7 +17,7 @@ npm install
 
 ## Set up your environment variables
 
-In the `.env` file (you'll find it as `.env.example`), add your private key(s). The dispatcher addresses should be correct but you could use custom ones if required.
+In the `.env` file (you'll find it as `.env.example`), add your private key(s) and rename to drop the "example" in the filename. The dispatcher addresses should be correct but you could use custom ones if required.
 
 Next, check the `config.json` file. It is populated with values to send packets over channel-16 on Base or channel-17 on Optimism.
 

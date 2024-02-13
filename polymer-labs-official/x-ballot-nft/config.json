@@ -1,4 +1,10 @@
 {
+    "srcContractType": "IbcBallot",
+    "destContractType": "IbcProofOfVoteNFT",
+    "deploy": {
+        "contractType": "IbcBallot",
+        "chain": "optimism"
+    },
     "createChannel": {
         "srcChain": "optimism",
         "srcAddr": "0xbCf08F7C24787210A815a428Fd49e5fBB7Cfc94A",
