@@ -36,7 +36,7 @@ For every script you'll find a field in the config.json!!
 Make sure to update the config with the intended files before running one of the scripts like so:
 ```bash
 npx hardhat run scripts/send-packet.js --network op-sepolia
-````
+```
 
 **NOTE** Make sure to align the `--network` flag value to be compatible with your config values either on optimism (op-sepolia) or base (base-sepolia).
 
