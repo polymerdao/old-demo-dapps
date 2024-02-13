@@ -5,6 +5,11 @@ const path = require("path");
 const source = process.argv[2];
 const destination = process.argv[3];
 
+if (!source || !destination) {
+  console.error('Usage: node deploy-config.js <source_network> <destination_network>');
+  process.exit(1);
+}
+
 // Function to update config.json
 function updateConfig(network, address, isSource) {
   const configPath = path.join(__dirname, '..', 'config.json');
