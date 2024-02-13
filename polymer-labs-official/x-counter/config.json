@@ -1,28 +1,39 @@
 {
-    "srcContractType": "Xcounter",
-    "destContractType": "Xcounter",
-    "deploy": {
-        "contractType": "Xcounter",
-        "chain": "base"
+  "deploy": {
+    "optimism": "Xcounter",
+    "base": "Xcounter"
+  },
+  "createChannel": {
+    "srcChain": "optimism",
+    "srcAddr": "0x8F459EadCb7A2eAE12006788B101e3E1A7a95557",
+    "dstChain": "base",
+    "dstAddr": "0x77a1fDb55194bFA55c89610E582f71aE7Ec0EE9F",
+    "version": "1.0",
+    "ordering": 1,
+    "fees": false
+  },
+  "sendPacket": {
+    "optimism": {
+      "portAddr": "0x8F459EadCb7A2eAE12006788B101e3E1A7a95557",
+      "channelId": "channel-22",
+      "timeout": 36000
     },
-    "createChannel": {
-        "srcChain": "base",
-        "srcAddr": "0x7a4Bfe4A798cCb345c29490E4159995412817A99",
-        "dstChain": "optimism",
-        "dstAddr": "0x19dC33DA515297d0D416e89c3788c9a5F9a5A60e",
-        "version": "1.0",
-        "ordering": 1,
-        "fees": false
-    },
-    "sendPacket": {
-        "srcAddr": "0x19dC33DA515297d0D416e89c3788c9a5F9a5A60e",
-        "srcChannelId": "channel-17",
-        "timeout": 36000
-    },
-    "sendUniversalPacket": {
-        "srcAddr": "0x456...",
-        "dstAddr": "0xdef...",
-        "srcChannelId": "channel-1",
+    "base": {
+      "portAddr": "0x77a1fDb55194bFA55c89610E582f71aE7Ec0EE9F",
+        "channelId": "channel-23",
         "timeout": 36000
     }
+  },
+  "sendUniversalPacket": {
+    "optimism": {
+        "portAddr": "",
+        "channelId": "channel-4",
+        "timeout": 36000
+      },
+      "base": {
+        "portAddr": "",
+          "channelId": "channel-5",
+          "timeout": 36000
+      }
+  }
 }

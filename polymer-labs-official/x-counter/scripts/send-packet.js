@@ -6,22 +6,23 @@
 // global scope, and execute the script.
 const hre = require('hardhat');
 const config = require('../config.json');
+const sendConfig = config.sendPacket;
 
 async function main() {
-    const sendConfig = config.sendPacket;
     const accounts = await hre.ethers.getSigners();
 
-    console.log(process.argv);
+    const networkName = hre.network.name;
+    const contractType = config["deploy"][`${networkName}`];
 
     const ibcAppSrc = await hre.ethers.getContractAt(
-        `${config.srcContractType}`,
-        sendConfig.srcAddr
+        `${contractType}`,
+        sendConfig[`${networkName}`]["portAddr"]
     );
 
     // Do logic to prepare the packet
-
-    const channelIdBytes = hre.ethers.encodeBytes32String(sendConfig.srcChannelId);
-    const timeoutSeconds = sendConfig.timeout;
+    const channelId = sendConfig[`${networkName}`]["channelId"];
+    const channelIdBytes = hre.ethers.encodeBytes32String(channelId);
+    const timeoutSeconds = sendConfig[`${networkName}`]["timeout"];
     // Send the packet
     await ibcAppSrc.connect(accounts[1]).sendCounterUpdate(
         channelIdBytes,

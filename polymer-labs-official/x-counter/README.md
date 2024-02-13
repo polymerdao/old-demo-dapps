@@ -25,9 +25,9 @@ You can also choose to deploy your own Xcounter contracts and create a channel b
 
 ## Run the scripts
 
-There's three scripts in the project:
+There's three types of scripts in the project:
 
-- `deploy.js` allows you to deploy your application contract
+- `deploy.js` and `deploy-config.js` allow you to deploy your application contract
 - `create-channel.js` creates a channel
 - `send-packet.js` sends packets over an existing channel
 
@@ -38,7 +38,31 @@ Make sure to update the config with the intended files before running one of the
 npx hardhat run scripts/send-packet.js --network op-sepolia
 ```
 
-**NOTE** Make sure to align the `--network` flag value to be compatible with your config values either on optimism (op-sepolia) or base (base-sepolia).
+**NOTE** Make sure to align the `--network` flag value to be compatible with your config values either on optimism or base.
+
+## Deploy
+
+Run:
+```bash
+node scripts/deploy-config.js optimism base
+```
+
+To deploy instances of the contracts on optimism as the source and base as the destination chains. (You can also switch the order)
+
+Also this script will take the output of the deployment and update the config file with all the relevant information.
+
+Then run:
+```bash
+npx hardhat run scripts/create-channel.js --network optimism
+```
+
+To create a channel between optimism and base. Note that the **ORDER MATTERS*; if you picked optimism as the source chain (first argument) above, you need to pick optimism to trigger the channel handshake.
+
+Finally run:
+```bash
+npx hardhat run scripts/send-packet.js --network optimism
+```
+to send a packet. You can pick either optimism or base to send the packet from.
 
 
 

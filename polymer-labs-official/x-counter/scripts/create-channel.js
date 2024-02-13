@@ -6,6 +6,7 @@
 // global scope, and execute the script.
 const hre = require('hardhat');
 const config = require('../config.json');
+const chanConfig = config.createChannel;
 const ibcConfig = require('../ibc.json');
 
 
@@ -15,27 +16,32 @@ function addressToPortId(portPrefix, address) {
 }
 
 async function main() {
-  if (config.createChannel.srcChain === 'optimism') {
-    const dispatcherAddr = process.env.OP_DISPATCHER;
-  } else if (config.createChannel.srcChain === 'base') {
-    const dispatcherAddr = process.env.BASE_DISPATCHER;
+  const networkName = hre.network.name;
+  
+  let dispatcherAddr;
+  if (networkName === 'optimism') {
+    dispatcherAddr = process.env.OP_DISPATCHER;
+  } else if (networkName === 'base') {
+    dispatcherAddr = process.env.BASE_DISPATCHER;
   };
+  
+  const contractType = config["deploy"][`${networkName}`];
 
   const ibcAppSrc = await hre.ethers.getContractAt(
-      `${config.srcContractType}`,
-      config.createChannel.srcAddr
+      `${contractType}`,
+      chanConfig.srcAddr
   );
   
-  const connHop1 = ibcConfig[config.createChannel.srcChain].canonConnFrom;
-  const connHop2 = ibcConfig[config.createChannel.dstChain].canonConnTo;
+  const connHop1 = ibcConfig[chanConfig.srcChain].canonConnFrom;
+  const connHop2 = ibcConfig[chanConfig.dstChain].canonConnTo;
 
   const tx = await ibcAppSrc.createChannel(
-    config.createChannel.version,
-    config.createChannel.ordering,
-    config.createChannel.fees,
+    chanConfig.version,
+    chanConfig.ordering,
+    chanConfig.fees,
     [ connHop1, connHop2 ],
     {
-        portId: `${addressToPortId(`polyibc.${config.createChannel.dstChain}`,config.createChannel.dstAddr)}`,
+        portId: `${addressToPortId(`polyibc.${chanConfig.dstChain}`,chanConfig.dstAddr)}`,
         channelId: hre.ethers.encodeBytes32String(''),
         version: '',
     },

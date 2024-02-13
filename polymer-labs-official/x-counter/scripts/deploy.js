@@ -8,13 +8,16 @@ const hre = require("hardhat");
 const config = require("../config");
 
 async function main() {
-  const dispatcherAddr = config.deploy.chain === "optimism" ? process.env.OP_DISPATCHER : process.env.BASE_DISPATCHER;
-  const myContract = await hre.ethers.deployContract(config.deploy.contractType, [dispatcherAddr]);
+  const networkName = hre.network.name;
+  const contractType = config["deploy"][`${networkName}`];
+  const dispatcherAddr = networkName === "optimism" ? process.env.OP_DISPATCHER : process.env.BASE_DISPATCHER;
+  
+  const myContract = await hre.ethers.deployContract(contractType, [dispatcherAddr]);
 
   await myContract.waitForDeployment();
 
   console.log(
-    `${config.deploy.contractType} deployed to ${myContract.target}`
+    `Contract ${contractType} deployed to ${myContract.target} on network ${networkName}`
   );
 }
 
