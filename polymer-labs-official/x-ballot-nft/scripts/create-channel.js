@@ -5,10 +5,9 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require('hardhat');
+const config = require('../config.json').createChannel;
+const ibcConfig = require('../ibc.json');
 
-const dispatcherAddr = '0xD92B86315CBcf9cC612F0b0542E0bE5871bCa146'
-const ibcBallotAddress = '' // add when IbcBallot contract is deployed
-const ibcProofOfVoteNFTAddr = '' // add when IbcProofOfVoteNFT is deployed on counterparty
 
 function addressToPortId(portPrefix, address) {
   const suffix = address.slice(2);
@@ -16,22 +15,28 @@ function addressToPortId(portPrefix, address) {
 }
 
 async function main() {
-
+    console.log(config);
     const dispatcher = await hre.ethers.getContractAt(
         'IbcDispatcher',
-        dispatcherAddr
+        process.env.OP_DISPATCHER
     )
 
     const ibcBallot = await hre.ethers.getContractAt(
         'IbcBallot',
-        ibcBallotAddress
+        config.srcAddr
     );
+  
+  const connHop1 = ibcConfig[config.srcChain].canonConnFrom;
+  const connHop2 = ibcConfig[config.dstChain].canonConnTo;
+
 
   const tx = await ibcBallot.createChannel(
-    false,
-    ['connection-2', 'connection-1'],
+    config.version,
+    config.ordering,
+    config.fees,
+    [ connHop1, connHop2 ],
     {
-        portId: `${addressToPortId('polyibc.base',ibcProofOfVoteNFTAddr)}`,
+        portId: `${addressToPortId(`polyibc.${config.dstChain}`,config.dstAddr)}`,
         channelId: hre.ethers.encodeBytes32String(''),
         version: '',
     },

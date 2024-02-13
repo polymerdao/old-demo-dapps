@@ -177,6 +177,8 @@ contract IbcBallot is IbcMwUser, IbcUniversalPacketReceiver {
      */
 
     function sendMintNFTMsg(
+        bytes32 channelId,
+        uint64 timeoutSeconds,
         address voterAddress,
         address recipient,
         address destPortAddress
@@ -186,9 +188,7 @@ contract IbcBallot is IbcMwUser, IbcUniversalPacketReceiver {
         uint voteId = voters[voterAddress].vote;
         bytes memory payload = abi.encode(voterAddress, recipient, voteId);
 
-        // hard coding for demo
-        bytes32 channelId = 0x6368616e6e656c2d340000000000000000000000000000000000000000000000; 
-        uint64 timeoutTimestamp = uint64((block.timestamp + 36000) * 1000000000);
+        uint64 timeoutTimestamp = uint64((block.timestamp + timeoutSeconds) * 1000000000);
 
         IbcUniversalPacketSender(mw).sendUniversalPacket(channelId, Ibc.toBytes32(destPortAddress), payload, timeoutTimestamp);
     }

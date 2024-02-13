@@ -169,6 +169,8 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
      */
 
     function sendMintNFTMsg(
+        bytes32 channelId,
+        uint64 timeoutSeconds,
         address voterAddress,
         address recipient
     ) external payable {
@@ -177,9 +179,7 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
         uint voteId = voters[voterAddress].vote;
         bytes memory payload = abi.encode(voterAddress, recipient, voteId);
 
-        // hard coding for demo
-        bytes32 channelId = connectedChannels[0]; 
-        uint64 timeoutTimestamp = uint64((block.timestamp + 36000) * 1000000000);
+        uint64 timeoutTimestamp = uint64((block.timestamp + timeoutSeconds) * 1000000000);
 
         dispatcher.sendPacket(channelId, payload, timeoutTimestamp);
     }
@@ -193,11 +193,6 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
         voters[voterAddr].weight = 0;
     }
 
-    function popConnectedChannels() external {
-        require(msg.sender == chairperson, "You are not the chairperson");
-        connectedChannels.pop();
-    }
-
     /**
      * 
      * @param feeEnabled in production, you'll want to enable this to avoid spamming create channel calls (costly for relayers)
@@ -206,6 +201,8 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
      * @param proof not implemented for now
      */
     function createChannel(
+        string calldata version,
+        uint8 ordering,
         bool feeEnabled, 
         string[] calldata connectionHops, 
         CounterParty calldata counterparty, 
@@ -214,8 +211,8 @@ contract IbcBallot is IbcReceiverBase, IbcReceiver {
 
         dispatcher.openIbcChannel(
             IbcChannelReceiver(address(this)),
-            supportedVersions[0],
-            ChannelOrder.UNORDERED,
+            version,
+            ChannelOrder(ordering),
             feeEnabled,
             connectionHops,
             counterparty,

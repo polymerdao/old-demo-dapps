@@ -7,3 +7,6 @@
 [submodule "polymer-labs-official/x-ballot-nft-quickstart/vibc-core"]
 	path = polymer-labs-official/x-ballot-nft-quickstart/vibc-core
 	url = https://github.com/open-ibc/vibc-core-smart-contracts
+[submodule "polymer-labs-official/x-counter/vibc-core"]
+	path = polymer-labs-official/x-counter/vibc-core
+	url = https://github.com/open-ibc/vibc-core-smart-contracts
