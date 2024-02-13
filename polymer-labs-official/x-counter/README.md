@@ -58,6 +58,8 @@ npx hardhat run scripts/create-channel.js --network optimism
 
 To create a channel between optimism and base. Note that the **ORDER MATTERS*; if you picked optimism as the source chain (first argument) above, you need to pick optimism to trigger the channel handshake.
 
+Check out the [channel tab in the explorer](https://explorer.prod.testnet.polymer.zone/channels) to find out the channel-id's related to your contracts and update them in the config.
+
 Finally run:
 ```bash
 npx hardhat run scripts/send-packet.js --network optimism
