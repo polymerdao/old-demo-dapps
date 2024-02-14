@@ -9,13 +9,21 @@ const config = require("../config");
 
 async function main() {
   const networkName = hre.network.name;
+
+  // The config should have a deploy object with the network name as the key and contract type as the value
   const contractType = config["deploy"][`${networkName}`];
+
+  // TODO: update to switch statement when supporting more networks
   const dispatcherAddr = networkName === "optimism" ? process.env.OP_DISPATCHER : process.env.BASE_DISPATCHER;
   
+  // Deploy the contract
+  // NOTE: when adding additional args to the constructor, add them to the array as well
   const myContract = await hre.ethers.deployContract(contractType, [dispatcherAddr]);
 
   await myContract.waitForDeployment();
 
+  // NOTE: Do not change the output string, its output is formatted to be used in the deploy-config.js script
+  // to update the config.json file
   console.log(
     `Contract ${contractType} deployed to ${myContract.target} on network ${networkName}`
   );

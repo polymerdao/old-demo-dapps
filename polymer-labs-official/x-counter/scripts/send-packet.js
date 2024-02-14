@@ -12,6 +12,7 @@ async function main() {
     const accounts = await hre.ethers.getSigners();
 
     const networkName = hre.network.name;
+    // Get the contract type from the config and get the contract
     const contractType = config["deploy"][`${networkName}`];
 
     const ibcAppSrc = await hre.ethers.getContractAt(
@@ -23,17 +24,20 @@ async function main() {
     const channelId = sendConfig[`${networkName}`]["channelId"];
     const channelIdBytes = hre.ethers.encodeBytes32String(channelId);
     const timeoutSeconds = sendConfig[`${networkName}`]["timeout"];
+
+    let counter = await ibcAppSrc.counter();
+    console.log(`Sending packet, counter before sending: ${counter}`);
+
     // Send the packet
     await ibcAppSrc.connect(accounts[1]).sendCounterUpdate(
         channelIdBytes,
         timeoutSeconds        // add optional args here depending on the contract
     )
-    let counter = await ibcAppSrc.counter();
-    console.log(`Sending packet, counter before sending: ${counter}`);
-
-    await new Promise((r) => setTimeout(r, 60000));
+    // wait for around 30 seconds for the packet to be received and acked
+    await new Promise((r) => setTimeout(r, 30000));
 
     counter = await ibcAppSrc.counter();
+    console.log(`Packet sent, counter after sending: ${counter}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

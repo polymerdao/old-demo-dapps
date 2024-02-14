@@ -33,5 +33,5 @@ module.exports = {
       ],
     },    
   },
-  defaultNetwork: 'base',
+  defaultNetwork: 'optimism',
 };
