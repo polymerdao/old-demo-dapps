@@ -12,6 +12,7 @@ async function main() {
     const accounts = await hre.ethers.getSigners();
 
     const networkName = hre.network.name;
+    // Get the contract type from the config and get the contract
     const contractType = config["deploy"][`${networkName}`];
 
     const ibcAppSrc = await hre.ethers.getContractAt(

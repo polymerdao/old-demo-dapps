@@ -19,7 +19,7 @@ npm install
 
 In the `.env` file (you'll find it as `.env.example`), add your private key(s) and rename to drop the "example" in the filename. The dispatcher addresses should be correct but you could use custom ones if required.
 
-Next, check the `config.json` file. It is populated with values to send packets over channel-16 on Base or channel-17 on Optimism.
+Next, check the `config.json` file. It is populated with values to send packets over channel-34 on Base or channel-15 on Optimism.
 
 You can also choose to deploy your own Xcounter contracts and create a channel between them before sending packets over.
 
@@ -28,14 +28,14 @@ You can also choose to deploy your own Xcounter contracts and create a channel b
 There's three types of scripts in the project:
 
 - `deploy.js` and `deploy-config.js` allow you to deploy your application contract
-- `create-channel.js` creates a channel
+- `create-channel.js` and `create-channel-config.js` creates a channel
 - `send-packet.js` sends packets over an existing channel
 
 For every script you'll find a field in the config.json!!
 
 Make sure to update the config with the intended files before running one of the scripts like so:
 ```bash
-npx hardhat run scripts/send-packet.js --network op-sepolia
+npx hardhat run scripts/send-packet.js --network optimism
 ```
 
 **NOTE** Make sure to align the `--network` flag value to be compatible with your config values either on optimism or base.
@@ -53,12 +53,14 @@ Also this script will take the output of the deployment and update the config fi
 
 Then run:
 ```bash
-npx hardhat run scripts/create-channel.js --network optimism
+node scripts/create-channel-config.js
 ```
 
-To create a channel between optimism and base. Note that the **ORDER MATTERS*; if you picked optimism as the source chain (first argument) above, you need to pick optimism to trigger the channel handshake.
+To create a channel between base and optimism. Note that the **ORDER MATTERS*; if you picked optimism as the source chain (first argument) above, by default it will create the channel from optimism and vice versa.
 
-Check out the [channel tab in the explorer](https://explorer.prod.testnet.polymer.zone/channels) to find out the channel-id's related to your contracts and update them in the config.
+Also this script will take the output of the channel creation and update the config file with all the relevant information.
+
+Check out the [channel tab in the explorer](https://explorer.prod.testnet.polymer.zone/channels) to find out if the correct channel-id's related to your contracts were updated in the config.
 
 Finally run:
 ```bash

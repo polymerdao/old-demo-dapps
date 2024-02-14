@@ -13,9 +13,14 @@ contract Xcounter is IbcReceiverBase, IbcReceiver {
     AckPacket[] public ackPackets;
     // received timeout packet as chain A
     IbcPacket[] public timeoutPackets;
+
+    struct ChannelMapping {
+        bytes32 channelId;
+        bytes32 cpChannelId;
+    }
     
-    // bytes array with the channel IDs of the connected channels
-    bytes32[] public connectedChannels;
+    // ChannelMapping array with the channel IDs of the connected channels
+    ChannelMapping[] public connectedChannels;
 
     // add supported versions (format to be negotiated between apps)
     string[] supportedVersions = ['1.0'];
@@ -36,6 +41,10 @@ contract Xcounter is IbcReceiverBase, IbcReceiver {
 
     function increment() internal {
         counter++;
+    }
+
+    function getConnectedChannels() external view returns (ChannelMapping[] memory) {
+        return connectedChannels;
     }
 
     /**
@@ -164,7 +173,11 @@ contract Xcounter is IbcReceiverBase, IbcReceiver {
 
         // do logic
 
-        connectedChannels.push(channelId);
+        ChannelMapping memory channelMapping = ChannelMapping({
+            channelId: channelId,
+            cpChannelId: counterpartyChannelId
+        });
+        connectedChannels.push(channelMapping);
     }
 
     function onCloseIbcChannel(
@@ -175,7 +188,7 @@ contract Xcounter is IbcReceiverBase, IbcReceiver {
         // logic to determin if the channel should be closed
         bool channelFound = false;
         for (uint256 i = 0; i < connectedChannels.length; i++) {
-            if (connectedChannels[i] == channelId) {
+            if (connectedChannels[i].channelId == channelId) {
                 delete connectedChannels[i];
                 channelFound = true;
                 break;

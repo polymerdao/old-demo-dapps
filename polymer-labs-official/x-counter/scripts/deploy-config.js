@@ -2,6 +2,9 @@ const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+// Run script with source and destination networks as arguments
+// Example: 
+// $ node deploy-config.js optimism base
 const source = process.argv[2];
 const destination = process.argv[3];
 
