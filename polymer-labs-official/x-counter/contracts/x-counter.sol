@@ -189,7 +189,10 @@ contract Xcounter is IbcReceiverBase, IbcReceiver {
         bool channelFound = false;
         for (uint256 i = 0; i < connectedChannels.length; i++) {
             if (connectedChannels[i].channelId == channelId) {
-                delete connectedChannels[i];
+                for (uint256 j = i; j < connectedChannels.length - 1; j++) {
+                    connectedChannels[j] = connectedChannels[j + 1];
+                }
+                connectedChannels.pop();
                 channelFound = true;
                 break;
             }
