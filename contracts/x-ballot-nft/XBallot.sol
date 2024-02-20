@@ -32,6 +32,11 @@ contract Xballot is CustomChanIbcApp {
 
     Proposal[] public proposals;
 
+    modifier onlyChairperson() {
+        require(msg.sender == chairperson, "Not chairperson.");
+        _;
+    }
+
     /** 
      * @dev Create a new ballot to choose one of 'proposalNames'.
      * @param proposalNames names of proposals
@@ -144,7 +149,7 @@ contract Xballot is CustomChanIbcApp {
     }
     // Utility functions
 
-    function resetVoter(address voterAddr) external {
+    function resetVoter(address voterAddr) external onlyChairperson {
         voters[voterAddr].ibcNFTMinted = false;
         voters[voterAddr].voted = false;
         voters[voterAddr].vote = 0;

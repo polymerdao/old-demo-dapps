@@ -28,6 +28,11 @@ contract XBallotUC is UniversalChanIbcApp {
 
     Proposal[] public proposals;
 
+    modifier onlyChairperson() {
+        require(msg.sender == chairperson, "Not chairperson.");
+        _;
+    }
+
     constructor(bytes32[] memory proposalNames, address _middleware) UniversalChanIbcApp(_middleware) {
         chairperson = msg.sender;
         voters[chairperson].weight = 1;
@@ -137,7 +142,7 @@ contract XBallotUC is UniversalChanIbcApp {
     
     // Utility functions
 
-    function resetVoter(address voterAddr) external {
+    function resetVoter(address voterAddr) external onlyChairperson {
         voters[voterAddr].ibcNFTMinted = false;
         voters[voterAddr].voted = false;
         voters[voterAddr].vote = 0;
