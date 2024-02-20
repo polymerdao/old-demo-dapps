@@ -76,6 +76,27 @@ git submodule update --init --recursive
 
 Find more documentation on using git submodules from the [official docs](https://git-scm.com/book/en/v2/Git-Tools-Submodules) or [in this tutorial](https://www.atlassian.com/git/tutorials/git-submodule).
 
+## 💻 Interacting with demos
+
+To interact with any of the demos, there's a couple of things to do. (Assuming the dependencies have been installed).
+
+1. Convert the `.env.example` file into an `.env` file. This will ignore the file for future git commits as well as expose the environment variables. Add your private keys and update the other values if you want to customize (advanced usage feature).
+
+2. Check out the configuration file; `config.json`. Depending on which application you'll want to interact with, update the contract type in the `deploy` field to the desired contract. For example, when interacting with x-ballot-nft-UC you would put 'XBallotUC' and 'XProofOfVoteNFTUC' for optimism or base (which one you pick where does not matter).
+
+3. Once the configuration file is updated and saved, you can look at the `just` commands with `just --list`. Alternatively follow the instructions in [the official Polymer documentation](https://docs.polymerlabs.org/docs/quickstart/).
+
+```bash
+$ just --list
+Available recipes:
+    clean                      # Clean up the environment by removing the artifacts and cache folders and running the forge clean command
+    compile COMPILER='hardhat' # Usage: just compile [compiler]
+    create-channel             # Usage: just create-channel
+    deploy SOURCE DESTINATION UNIVERSAL='true' # Usage: just deploy [source] [destination] [universal]
+    install                    # Install dependencies
+    send-packet SOURCE UNIVERSAL='true' # Usage: just send-packet [source] [universal]
+```
+
 ## 🤝 Contributing
 
 We welcome and encourage contributions from our community! Here’s how you can contribute.
