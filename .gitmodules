@@ -1,12 +1,6 @@
-[submodule "polymer-labs-official/x-ballot-nft/vibc-core"]
-	path = polymer-labs-official/x-ballot-nft/vibc-core
+[submodule "lib/vibc-core-smart-contracts"]
+	path = lib/vibc-core-smart-contracts
 	url = https://github.com/open-ibc/vibc-core-smart-contracts
-[submodule "polymer-labs-official/x-ballot-nft-UC/vibc-core"]
-	path = polymer-labs-official/x-ballot-nft-UC/vibc-core
-	url = https://github.com/open-ibc/vibc-core-smart-contracts
-[submodule "polymer-labs-official/x-ballot-nft-quickstart/vibc-core"]
-	path = polymer-labs-official/x-ballot-nft-quickstart/vibc-core
-	url = https://github.com/open-ibc/vibc-core-smart-contracts
-[submodule "polymer-labs-official/x-counter/vibc-core"]
-	path = polymer-labs-official/x-counter/vibc-core
-	url = https://github.com/open-ibc/vibc-core-smart-contracts
+[submodule "lib/forge-std"]
+	path = lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
