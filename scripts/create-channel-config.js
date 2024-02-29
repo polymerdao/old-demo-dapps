@@ -4,7 +4,6 @@ const path = require("path");
 const configRelativePath = process.env.CONFIG_PATH || 'config.json';
 const configPath = path.join(__dirname, '..' , configRelativePath);
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-console.log(`Using config file: ${JSON.stringify(config)}`);
 
 
 // Function to update config.json
