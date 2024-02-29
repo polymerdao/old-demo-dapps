@@ -9,7 +9,7 @@ import '../base/CustomChanIbcApp.sol';
  * @dev Implements voting process along with vote delegation, 
  * and ability to send cross-chain instruction to mint NFT on counterparty
  */
-contract Xballot is CustomChanIbcApp {
+contract XBallot is CustomChanIbcApp {
     struct Voter {
         uint weight; // weight is accumulated by delegation
         bool voted;  // if true, that person already voted;    
@@ -41,7 +41,7 @@ contract Xballot is CustomChanIbcApp {
      * @dev Create a new ballot to choose one of 'proposalNames'.
      * @param proposalNames names of proposals
      */
-    constructor(bytes32[] memory proposalNames, IbcDispatcher _dispatcher) CustomChanIbcApp(_dispatcher) {
+    constructor( IbcDispatcher _dispatcher, bytes32[] memory proposalNames) CustomChanIbcApp(_dispatcher) {
         chairperson = msg.sender;
         voters[chairperson].weight = 1;
 
