@@ -1,7 +1,7 @@
 {
   "deploy": {
-    "optimism": "XCounterUC",
-    "base": "XCounterUC"
+    "optimism": "XBallot",
+    "base": "XProofOfVoteNFT"
   },
   "createChannel": {
     "srcChain": "optimism",
